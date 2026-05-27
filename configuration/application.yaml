@@ -12,5 +12,9 @@ zeebe:
         - id: rate-limit
           className: com.example.RateLimitInterceptor
           jarPath: /usr/local/zeebe/interceptors/rate-limit-interceptor.jar
+      filters:
+        - id: rate-limit
+          className: com.example.RateLimitFilter
+          jarPath: /usr/local/camunda/filters/rate-limit-filter.jar
     network:
       host: 0.0.0.0
