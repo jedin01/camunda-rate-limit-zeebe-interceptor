@@ -1,0 +1,97 @@
+networks:
+  camunda-platform:
+
+services:
+  zeebe:
+    build: .
+
+    container_name: zeebe
+
+    ports:
+      - 26500:26500 # gRPC (Spring Boot conecta aqui)
+
+      - 9600:9600 # Métricas
+
+      - 8080:8080 # REST API
+
+    environment:
+      - ZEEBE_BROKER_GATEWAY_INTERCEPTORS_0_ID=rate-limit
+      - ZEEBE_BROKER_GATEWAY_INTERCEPTORS_0_CLASSNAME=com.example.RateLimitInterceptor
+      - ZEEBE_BROKER_GATEWAY_INTERCEPTORS_0_JARPATH=/usr/local/zeebe/interceptors/rate-limit-interceptor.jar
+      - ZEEBE_BROKER_EXPORTERS_ELASTICSEARCH_CLASSNAME=io.camunda.zeebe.exporter.ElasticsearchExporter
+      - ZEEBE_BROKER_EXPORTERS_ELASTICSEARCH_ARGS_URL=http://elasticsearch:9200
+    depends_on:
+      - elasticsearch
+
+    networks:
+      - camunda-platform
+
+  operate:
+    image: camunda/operate:8.5.0
+
+    container_name: operate
+
+    ports:
+      - 8081:8080
+
+    environment:
+      - CAMUNDA_OPERATE_ZEEBE_GATEWAYADDRESS=zeebe:26500
+
+      - CAMUNDA_OPERATE_ELASTICSEARCH_URL=http://elasticsearch:9200
+
+      - CAMUNDA_OPERATE_ZEEBEELASTICSEARCH_URL=http://elasticsearch:9200
+
+    depends_on:
+      - zeebe
+
+      - elasticsearch
+
+    networks:
+      - camunda-platform
+
+  tasklist:
+    image: camunda/tasklist:8.5.0
+
+    container_name: tasklist
+
+    ports:
+      - 8082:8080
+
+    environment:
+      - CAMUNDA_TASKLIST_ZEEBE_GATEWAYADDRESS=zeebe:26500
+
+      - CAMUNDA_TASKLIST_ELASTICSEARCH_URL=http://elasticsearch:9200
+
+      - CAMUNDA_TASKLIST_ZEEBEELASTICSEARCH_URL=http://elasticsearch:9200
+
+    depends_on:
+      - zeebe
+
+      - elasticsearch
+
+    networks:
+      - camunda-platform
+
+  elasticsearch:
+    image: docker.elastic.co/elasticsearch/elasticsearch:8.13.0
+
+    container_name: elasticsearch
+
+    ports:
+      - 9200:9200
+
+    environment:
+      - discovery.type=single-node
+
+      - xpack.security.enabled=false
+
+      - ES_JAVA_OPTS=-Xms512m -Xmx512m
+
+    ulimits:
+      memlock:
+        soft: -1
+
+        hard: -1
+
+    networks:
+      - camunda-platform

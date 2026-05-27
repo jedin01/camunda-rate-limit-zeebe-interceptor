@@ -1,0 +1,16 @@
+zeebe:
+  broker:
+    gateway:
+      enable: true
+      network:
+        port: 26500
+      security:
+        enabled: false
+        authentication:
+          mode: none
+      interceptors:                          # ← adicione isto
+        - id: rate-limit
+          className: com.example.RateLimitInterceptor
+          jarPath: /usr/local/zeebe/interceptors/rate-limit-interceptor.jar
+    network:
+      host: 0.0.0.0
