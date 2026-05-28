@@ -8,19 +8,16 @@ services:
     container_name: zeebe
 
     ports:
-      - 26500:26500 # gRPC (Spring Boot conecta aqui)
-
-      - 9600:9600 # Métricas
-
-      - 8080:8080 # REST API
-
+      - 26500:26500 
+      - 9600:9600 
+      - 8080:8080
     environment:
       - ZEEBE_BROKER_GATEWAY_INTERCEPTORS_0_ID=rate-limit
       - ZEEBE_BROKER_GATEWAY_INTERCEPTORS_0_CLASSNAME=com.example.RateLimitInterceptor
       - ZEEBE_BROKER_GATEWAY_INTERCEPTORS_0_JARPATH=/usr/local/zeebe/interceptors/rate-limit-interceptor.jar
-      - ZEEBE_GATEWAY_FILTERS_0_ID=rate-limit
-      - ZEEBE_GATEWAY_FILTERS_0_CLASSNAME=com.example.RateLimitFilter
-      - ZEEBE_GATEWAY_FILTERS_0_JARPATH=/usr/local/camunda/filters/rate-limit-filter.jar
+      - ZEEBE_BROKER_GATEWAY_FILTERS_0_ID=rate-limit
+      - ZEEBE_BROKER_GATEWAY_FILTERS_0_CLASSNAME=com.example.RateLimitFilter
+      - ZEEBE_BROKER_GATEWAY_FILTERS_0_JARPATH=/usr/local/camunda/filters/rate-limit-filter.jar
       - ZEEBE_BROKER_EXPORTERS_ELASTICSEARCH_CLASSNAME=io.camunda.zeebe.exporter.ElasticsearchExporter
       - ZEEBE_BROKER_EXPORTERS_ELASTICSEARCH_ARGS_URL=http://elasticsearch:9200
     depends_on:

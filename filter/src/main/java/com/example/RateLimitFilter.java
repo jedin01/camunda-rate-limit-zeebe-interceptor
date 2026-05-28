@@ -40,9 +40,11 @@ public class RateLimitFilter implements Filter {
         HttpServletRequest req = (HttpServletRequest) request;
         HttpServletResponse res = (HttpServletResponse) response;
 
+        String uri = req.getRequestURI();
         boolean isCreateProcess =
             "POST".equalsIgnoreCase(req.getMethod()) &&
-            req.getRequestURI().contains("/v2/process-instances");
+            (uri.contains("/v2/process-instances") ||
+                uri.contains("/v1/process-instances"));
 
         if (!isCreateProcess) {
             chain.doFilter(request, response);
