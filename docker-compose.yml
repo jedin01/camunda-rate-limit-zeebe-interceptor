@@ -16,7 +16,7 @@ services:
       - camunda-platform
 
   zeebe:
-    image: camunda/zeebe:8.5.0
+    image: camunda/zeebe:8.7.0
 
     container_name: zeebe
 
@@ -25,6 +25,7 @@ services:
       - 9600:9600
       - 8080:8080
     environment:
+      - ZEEBE_BROKER_GATEWAY_REST_ENABLED=true
       - ZEEBE_BROKER_GATEWAY_INTERCEPTORS_0_ID=rate-limit
       - ZEEBE_BROKER_GATEWAY_INTERCEPTORS_0_CLASSNAME=com.example.RateLimitInterceptor
       - ZEEBE_BROKER_GATEWAY_INTERCEPTORS_0_JARPATH=/usr/local/zeebe/interceptors/rate-limit-interceptor.jar
@@ -48,7 +49,7 @@ services:
       - camunda-platform
 
   operate:
-    image: camunda/operate:8.5.0
+    image: camunda/operate:8.7.2
 
     container_name: operate
 
@@ -71,7 +72,7 @@ services:
       - camunda-platform
 
   tasklist:
-    image: camunda/tasklist:8.5.0
+    image: camunda/tasklist:8.7.2
 
     container_name: tasklist
 
