@@ -77,9 +77,9 @@ public class RateLimitFilter implements Filter {
             res.setCharacterEncoding("UTF-8");
             res.getWriter().write(
                 "{\"error\":\"Rate limit atingido\"," +
-                    "\"message\":\"Máximo " +
+                    "\"message\":\"Máximo: " +
                     MAX_PER_WINDOW +
-                    " processo(s) por minuto.\"," +
+                    " processo por minuto.\"," +
                     "\"retryAfter\":" +
                     remaining +
                     "}"

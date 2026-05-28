@@ -10,13 +10,13 @@ services:
       - ./:/build
       - maven-cache:/root/.m2
     command: >
-      mvn -f interceptor/pom.xml clean package &&
-      mvn -f filter/pom.xml clean package
+      sh -c "mvn -f interceptor/pom.xml clean package &&
+             mvn -f filter/pom.xml clean package"
     networks:
       - camunda-platform
 
   zeebe:
-    image: camunda/zeebe:8.7.0
+    image: camunda/zeebe:8.7.2
 
     container_name: zeebe
 
@@ -34,7 +34,8 @@ services:
       - ZEEBE_BROKER_GATEWAY_FILTERS_0_JARPATH=/usr/local/camunda/filters/rate-limit-filter.jar
       - ZEEBE_BROKER_EXPORTERS_ELASTICSEARCH_CLASSNAME=io.camunda.zeebe.exporter.ElasticsearchExporter
       - ZEEBE_BROKER_EXPORTERS_ELASTICSEARCH_ARGS_URL=http://elasticsearch:9200
-
+      - CAMUNDA_SECURITY_AUTHENTICATION_UNPROTECTEDAPI=true
+      - CAMUNDA_SECURITY_ENABLED=false
     volumes:
       - ./interceptor/target/rate-limit-interceptor.jar:/usr/local/zeebe/interceptors/rate-limit-interceptor.jar:ro
       - ./filter/target/rate-limit-filter.jar:/usr/local/camunda/filters/rate-limit-filter.jar:ro
