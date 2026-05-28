@@ -11,7 +11,7 @@ FROM camunda/zeebe:8.5.0
 COPY --from=builder /build/interceptor/target/rate-limit-interceptor.jar \
      /usr/local/zeebe/interceptors/rate-limit-interceptor.jar
 
-COPY --from=builder /build/target/camunda-filter-jar-with-dependencies.jar \
+COPY --from=builder /build/interceptor/target/rate-limit-interceptor.jar \
      /usr/local/camunda/filters/rate-limit-filter.jar
 
 COPY configuration/application.yaml /usr/local/zeebe/config/application.yaml
