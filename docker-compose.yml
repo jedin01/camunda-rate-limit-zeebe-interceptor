@@ -2,14 +2,27 @@ networks:
   camunda-platform:
 
 services:
+  build-artifacts:
+    image: maven:3.9-eclipse-temurin-17
+    container_name: build-artifacts
+    working_dir: /build
+    volumes:
+      - ./:/build
+      - maven-cache:/root/.m2
+    command: >
+      mvn -f interceptor/pom.xml clean package &&
+      mvn -f filter/pom.xml clean package
+    networks:
+      - camunda-platform
+
   zeebe:
-    build: .
+    image: camunda/zeebe:8.5.0
 
     container_name: zeebe
 
     ports:
-      - 26500:26500 
-      - 9600:9600 
+      - 26500:26500
+      - 9600:9600
       - 8080:8080
     environment:
       - ZEEBE_BROKER_GATEWAY_INTERCEPTORS_0_ID=rate-limit
@@ -20,8 +33,16 @@ services:
       - ZEEBE_BROKER_GATEWAY_FILTERS_0_JARPATH=/usr/local/camunda/filters/rate-limit-filter.jar
       - ZEEBE_BROKER_EXPORTERS_ELASTICSEARCH_CLASSNAME=io.camunda.zeebe.exporter.ElasticsearchExporter
       - ZEEBE_BROKER_EXPORTERS_ELASTICSEARCH_ARGS_URL=http://elasticsearch:9200
+
+    volumes:
+      - ./interceptor/target/rate-limit-interceptor.jar:/usr/local/zeebe/interceptors/rate-limit-interceptor.jar:ro
+      - ./filter/target/rate-limit-filter.jar:/usr/local/camunda/filters/rate-limit-filter.jar:ro
+
     depends_on:
-      - elasticsearch
+      build-artifacts:
+        condition: service_completed_successfully
+      elasticsearch:
+        condition: service_started
 
     networks:
       - camunda-platform
@@ -95,3 +116,6 @@ services:
 
     networks:
       - camunda-platform
+
+volumes:
+  maven-cache:
