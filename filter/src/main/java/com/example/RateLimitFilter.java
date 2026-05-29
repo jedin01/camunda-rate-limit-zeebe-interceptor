@@ -61,7 +61,6 @@ public class RateLimitFilter implements Filter {
             return;
         }
 
-        // Verifica rate limit
         if (!isAllowed(userId)) {
             long[] state = userCounters.get(userId);
             long remaining =
@@ -87,7 +86,6 @@ public class RateLimitFilter implements Filter {
             return;
         }
 
-        // Dentro do limite — deixa passar
         chain.doFilter(request, response);
     }
 
