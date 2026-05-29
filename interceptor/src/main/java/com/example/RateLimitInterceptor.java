@@ -51,7 +51,7 @@ public class RateLimitInterceptor implements ServerInterceptor {
 
         CALLS.compute(userId, (key, state) -> {
             if (state == null) {
-                state = new long[] { 0L, 0L }; // lastCallMs, count
+                state = new long[] { 0L, 0L };
             }
 
             long lastCall = state[0];
